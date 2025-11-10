@@ -1,0 +1,51 @@
+# Archivos compilados de Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Directorio de compilación de NetBeans
+build/
+nbbuild/
+dist/
+nbdist/
+
+# Archivos de configuración privada de NetBeans
+nbproject/private/
+
+# Archivos de caché de NetBeans
+.nb-gradle/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de log
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+*~
+
+# Archivos de IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Archivos de Maven (si se usa)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Archivos de Gradle (si se usa)
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
