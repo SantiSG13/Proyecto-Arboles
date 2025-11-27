@@ -3,10 +3,10 @@ package arboles;
 public class Principal {
     public static void main(String[] args) {
         Arbol arbol = new Arbol();
-        String cadena = "DFGBICEA";
+        String cadena = "DFANBGCE";
         arbol.ConstruirArbol(cadena);
-        arbol.MostrarInOrden(arbol.getRaiz());
-        arbol.MostrarPreOrden(arbol.getRaiz());
-        arbol.MostrarPostOrden(arbol.getRaiz());
+
+
+        arbol.SoloHijos(arbol.getRaiz());
     }
 }

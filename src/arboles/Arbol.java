@@ -94,6 +94,30 @@ public class Arbol {
         }
     }
 
+    public void SoloHijos(Nodo Raiz) {
+        int total = ContarSoloHijos(Raiz);
+        JOptionPane.showMessageDialog(null, "Nodos con solo un hijo: " + total, "Conteo de Nodos", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private int ContarSoloHijos(Nodo Raiz) {
+
+        if (Raiz == null) {
+            return 0;
+        }
+
+        int cont = 0;
+
+        // Verificar si el nodo actual tiene solo un hijo
+        if ((Raiz.getLigaI() != null && Raiz.getLigaD() == null) || (Raiz.getLigaD() != null && Raiz.getLigaI() == null)) {
+            cont = 1;
+        }
+
+        // Sumar los conteos de los subárboles
+        cont += ContarSoloHijos(Raiz.getLigaI());
+        cont += ContarSoloHijos(Raiz.getLigaD());
+
+        return cont;
+    }
 }
 
 
