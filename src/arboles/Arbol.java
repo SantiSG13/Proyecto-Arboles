@@ -409,6 +409,7 @@ public class Arbol {
                 || (nodo.getLigaD() != null && nodo.getLigaD().getDato() == dato)) {
             return nodo;
         }
+
         Nodo izq = encontrarPadre(nodo.getLigaI(), dato);
         if (izq != null)
             return izq;
@@ -419,41 +420,36 @@ public class Arbol {
         if (Raiz == null) {
             return "";
         }
-        int nivelDato = nivel(dato);
-        if (nivelDato == -1 || nivelDato == 1) {
-            return ""; // No existe o es la raíz (no tiene primos)
-        }
 
         Nodo padre = encontrarPadre(Raiz, dato);
         if (padre == null) {
-            return "";
+            return ""; // Es la raíz o no existe
+        }
+
+        Nodo abuelo = encontrarPadre(Raiz, padre.getDato());
+        if (abuelo == null) {
+            return ""; // El padre es la raíz, no hay tíos
+        }
+
+        Nodo tio = null;
+        if (abuelo.getLigaI() == padre) {
+            tio = abuelo.getLigaD();
+        } else {
+            tio = abuelo.getLigaI();
+        }
+
+        if (tio == null) {
+            return ""; // No tiene tío
         }
 
         StringBuilder sb = new StringBuilder();
-        primosHermanosAux(Raiz, 1, nivelDato, padre, sb);
+        if (tio.getLigaI() != null) {
+            sb.append(tio.getLigaI().getDato()).append(" ");
+        }
+        if (tio.getLigaD() != null) {
+            sb.append(tio.getLigaD().getDato()).append(" ");
+        }
+
         return sb.toString();
     }
-
-    private void primosHermanosAux(Nodo nodo, int nivelActual, int nivelObjetivo, Nodo padreDelDato, StringBuilder sb) {
-        if (nodo == null) {
-            return;
-        }
-
-        // Si estamos en el nivel del padre (nivelObjetivo - 1), miramos sus hijos
-        if (nivelActual == nivelObjetivo - 1) {
-            // Si este nodo NO es el padre del dato que buscamos, sus hijos son primos
-            if (nodo != padreDelDato) {
-                if (nodo.getLigaI() != null) {
-                    sb.append(nodo.getLigaI().getDato()).append(" ");
-                }
-                if (nodo.getLigaD() != null) {
-                    sb.append(nodo.getLigaD().getDato()).append(" ");
-                }
-            }
-        } else {
-            primosHermanosAux(nodo.getLigaI(), nivelActual + 1, nivelObjetivo, padreDelDato, sb);
-            primosHermanosAux(nodo.getLigaD(), nivelActual + 1, nivelObjetivo, padreDelDato, sb);
-        }
-    }
-
 }
