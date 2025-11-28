@@ -18,10 +18,9 @@ public class Arbol {
         this.Raiz = raiz;
     }
 
-    // ========================== LÓGICA PRINCIPAL AVL ==========================
+    // --- Lógica AVL ---
 
-    // --- Utilidades básicas de altura y equilibrio ---
-
+    // Obtener altura de un nodo
     private int obtenerAltura(Nodo n) {
         if (n == null) {
             return 0;
@@ -29,68 +28,77 @@ public class Arbol {
         return n.getAltura();
     }
 
+    // Obtener factor de equilibrio
     private int obtenerFactorEquilibrio(Nodo n) {
         if (n == null) {
             return 0;
         }
-        return obtenerAltura(n.getLigaD()) - obtenerAltura(n.getLigaI());
+        return obtenerAltura(n.getLigaI()) - obtenerAltura(n.getLigaD());   
     }
 
+    // Actualizar altura de un nodo
     private void actualizarAltura(Nodo n) {
         if (n != null) {
             n.setAltura(Math.max(obtenerAltura(n.getLigaI()), obtenerAltura(n.getLigaD())) + 1);
         }
     }
 
-    // --- Rotaciones básicas ---
-
+    // Rotación Simple Derecha
     private Nodo rotacionDerecha(Nodo y) {
         Nodo x = y.getLigaI();
         Nodo T2 = x.getLigaD();
 
+        // Rotación
         x.setLigaD(y);
         y.setLigaI(T2);
 
+        // Actualizar alturas
         actualizarAltura(y);
         actualizarAltura(x);
 
-        return x;
+        return x; // Nueva raíz
     }
 
+    // Rotación Simple Izquierda
     private Nodo rotacionIzquierda(Nodo x) {
         Nodo y = x.getLigaD();
         Nodo T2 = y.getLigaI();
 
+        // Rotación
         y.setLigaI(x);
         x.setLigaD(T2);
 
+        // Actualizar alturas
         actualizarAltura(x);
         actualizarAltura(y);
 
-        return y;
+        return y; // Nueva raíz
     }
 
-    // --- Balanceo general del nodo ---
-
+    // Balancear nodo
     private Nodo balancear(Nodo n) {
         actualizarAltura(n);
         int balance = obtenerFactorEquilibrio(n);
-        n.setFe(balance);
+        n.setFe(balance); // Actualizar FE para visualización/debug
 
-        if (balance < -1 && obtenerFactorEquilibrio(n.getLigaI()) <= 0) {
+        // Caso Izquierda-Izquierda (Rotación Derecha)
+        if (balance > 1 && obtenerFactorEquilibrio(n.getLigaI()) >= 0) {
             return rotacionDerecha(n);
         }
 
-        if (balance > 1 && obtenerFactorEquilibrio(n.getLigaD()) >= 0) {
+        // Caso Derecha-Derecha (Rotación Izquierda)
+        if (balance < -1 && obtenerFactorEquilibrio(n.getLigaD()) <= 0) {
             return rotacionIzquierda(n);
         }
 
-        if (balance < -1 && obtenerFactorEquilibrio(n.getLigaI()) > 0) {
+        // Caso Izquierda-Derecha (Rotación Doble Izquierda-Derecha)
+        if (balance > 1 && obtenerFactorEquilibrio(n.getLigaI()) < 0) {
             n.setLigaI(rotacionIzquierda(n.getLigaI()));
             return rotacionDerecha(n);
         }
 
-        if (balance > 1 && obtenerFactorEquilibrio(n.getLigaD()) < 0) {
+        // Caso Derecha-Izquierda (Rotación Doble Derecha-Izquierda)
+        if (balance < -1 && obtenerFactorEquilibrio(n.getLigaD()) > 0) {
             n.setLigaD(rotacionDerecha(n.getLigaD()));
             return rotacionIzquierda(n);
         }
@@ -98,19 +106,19 @@ public class Arbol {
         return n;
     }
 
-    // ========================== CONSTRUCCIÓN E INSERCIÓN ==========================
-
+    // Construir árbol (Modificado para usar inserción AVL)
     public void ConstruirArbol(String cadenaOriginal) {
-        Raiz = null;
+        Raiz = null; // Reiniciar árbol
         char[] vectorCaracteres = cadenaOriginal.toCharArray();
         for (char c : vectorCaracteres) {
             insertarDato(c);
         }
     }
 
+    // Insertar dato (AVL)
     public boolean insertarDato(char dato) {
-        if (buscarNodo(Raiz, dato) != null) {
-            return false;
+        if (buscarNodo(Raiz, dato) != null) { // Assuming buscarNodo exists or will be added
+            return false; // Ya existe
         }
         Raiz = insertarAvlAux(Raiz, dato);
         return true;
@@ -126,12 +134,13 @@ public class Arbol {
         } else if (dato > nodo.getDato()) {
             nodo.setLigaD(insertarAvlAux(nodo.getLigaD(), dato));
         } else {
-            return nodo;
+            return nodo; // Duplicados no permitidos
         }
 
         return balancear(nodo);
     }
 
+    // Helper method to search for a node (needed for insertarDato and eliminarDato)
     private Nodo buscarNodo(Nodo nodo, char dato) {
         if (nodo == null || nodo.getDato() == dato) {
             return nodo;
@@ -143,8 +152,7 @@ public class Arbol {
         }
     }
 
-    // ========================== ELIMINACIÓN ==========================
-
+    // Eliminar dato (AVL)
     public boolean eliminarDato(char dato) {
         if (buscarNodo(Raiz, dato) == null) {
             return false;
@@ -163,14 +171,16 @@ public class Arbol {
         } else if (dato > nodo.getDato()) {
             nodo.setLigaD(eliminarAvlAux(nodo.getLigaD(), dato));
         } else {
+            // Nodo encontrado
             if (nodo.getLigaI() == null || nodo.getLigaD() == null) {
                 Nodo temp = (nodo.getLigaI() != null) ? nodo.getLigaI() : nodo.getLigaD();
                 if (temp == null) {
-                    nodo = null;
+                    nodo = null; // Caso hoja
                 } else {
-                    nodo = temp;
+                    nodo = temp; // Caso un hijo
                 }
             } else {
+                // Caso dos hijos
                 char sucesor = encontrarMinimo(nodo.getLigaD());
                 nodo.setDato(sucesor);
                 nodo.setLigaD(eliminarAvlAux(nodo.getLigaD(), sucesor));
@@ -193,7 +203,7 @@ public class Arbol {
         return minVal;
     }
 
-    // ========================== RECORRIDOS Y CONSULTAS ==========================
+    // --- Métodos de Recorrido y Consulta ---
 
     public void MostrarInOrden() {
         if (Raiz == null) {
@@ -299,8 +309,6 @@ public class Arbol {
         }
     }
 
-    // ========================== UTILIDADES DE CONSULTA ==========================
-
     public int nivel(char dato) {
         return nivelAux(Raiz, dato, 1);
     }
@@ -342,10 +350,10 @@ public class Arbol {
     public String ancestros(char dato) {
         StringBuilder resultado = new StringBuilder();
         if (buscarNodo(Raiz, dato) == null) {
-            return "";
+            return ""; // Dato no existe
         }
         if (Raiz.getDato() == dato) {
-            return "";
+            return ""; // Raíz no tiene ancestros
         }
         ancestrosAux(Raiz, dato, resultado);
         return resultado.toString();
@@ -367,11 +375,11 @@ public class Arbol {
 
     public String hermanos(char dato) {
         if (Raiz == null || Raiz.getDato() == dato) {
-            return "";
+            return ""; // Árbol vacío o es la raíz
         }
         Nodo padre = encontrarPadre(Raiz, dato);
         if (padre == null) {
-            return "";
+            return ""; // No se encontró
         }
 
         StringBuilder sb = new StringBuilder();
