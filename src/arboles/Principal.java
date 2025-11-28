@@ -147,6 +147,21 @@ public class Principal {
                                 "Hermanos", JOptionPane.INFORMATION_MESSAGE);
                     }
                     break;
+                case 11:
+                    // Mostrar Primos Hermanos
+                    String datoPH = JOptionPane.showInputDialog(null,
+                            "Ingrese el dato para mostrar sus primos hermanos (un caracter):", "Primos Hermanos",
+                            JOptionPane.QUESTION_MESSAGE);
+                    String primos = arbol.primosHermanos(datoPH.charAt(0));
+                    if (primos.isEmpty()) {
+                        JOptionPane.showMessageDialog(null,
+                                "No se encontraron primos hermanos para el dato '" + datoPH + "'.",
+                                "Primos Hermanos", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Primos hermanos del dato '" + datoPH + "':\n" + primos,
+                                "Primos Hermanos", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    break;
                 case 0:
                     JOptionPane.showMessageDialog(null, "Hasta pronto, :)");
                     break;
@@ -170,6 +185,7 @@ public class Principal {
                 + "8. Eliminar un dato \n"
                 + "9. Mostrar Árbol \n"
                 + "10. Mostrar Hermanos \n"
+                + "11. Mostrar Primos Hermanos \n"
                 + "0. Salir \n"));
         return opcionPr;
     }

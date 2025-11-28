@@ -33,7 +33,7 @@ public class Arbol {
         if (n == null) {
             return 0;
         }
-        return obtenerAltura(n.getLigaI()) - obtenerAltura(n.getLigaD());   
+        return obtenerAltura(n.getLigaI()) - obtenerAltura(n.getLigaD());
     }
 
     // Actualizar altura de un nodo
@@ -44,35 +44,35 @@ public class Arbol {
     }
 
     // Rotación Simple Derecha
-    private Nodo rotacionDerecha(Nodo y) {
-        Nodo x = y.getLigaI();
-        Nodo T2 = x.getLigaD();
+    private Nodo rotacionDerecha(Nodo P) {
+        Nodo Q = P.getLigaI();
+        Nodo aux = Q.getLigaD();
 
         // Rotación
-        x.setLigaD(y);
-        y.setLigaI(T2);
+        Q.setLigaD(P);
+        P.setLigaI(aux);
 
         // Actualizar alturas
-        actualizarAltura(y);
-        actualizarAltura(x);
+        actualizarAltura(P);
+        actualizarAltura(Q);
 
-        return x; // Nueva raíz
+        return Q; // Nueva raíz
     }
 
     // Rotación Simple Izquierda
-    private Nodo rotacionIzquierda(Nodo x) {
-        Nodo y = x.getLigaD();
-        Nodo T2 = y.getLigaI();
+    private Nodo rotacionIzquierda(Nodo P) {
+        Nodo Q = P.getLigaD();
+        Nodo aux = Q.getLigaI();
 
         // Rotación
-        y.setLigaI(x);
-        x.setLigaD(T2);
+        Q.setLigaI(P);
+        P.setLigaD(aux);
 
         // Actualizar alturas
-        actualizarAltura(x);
-        actualizarAltura(y);
+        actualizarAltura(P);
+        actualizarAltura(Q);
 
-        return y; // Nueva raíz
+        return Q; // Nueva raíz
     }
 
     // Balancear nodo
@@ -110,14 +110,14 @@ public class Arbol {
     public void ConstruirArbol(String cadenaOriginal) {
         Raiz = null; // Reiniciar árbol
         char[] vectorCaracteres = cadenaOriginal.toCharArray();
-        for (char c : vectorCaracteres) {
-            insertarDato(c);
+        for (int i = 0; i < vectorCaracteres.length; i++) {
+            insertarDato(vectorCaracteres[i]);
         }
     }
 
     // Insertar dato (AVL)
     public boolean insertarDato(char dato) {
-        if (buscarNodo(Raiz, dato) != null) { // Assuming buscarNodo exists or will be added
+        if (buscarNodo(Raiz, dato) != null) {
             return false; // Ya existe
         }
         Raiz = insertarAvlAux(Raiz, dato);
@@ -163,7 +163,7 @@ public class Arbol {
 
     private Nodo eliminarAvlAux(Nodo nodo, char dato) {
         if (nodo == null) {
-            return null;
+            return null; // No encontrado
         }
 
         if (dato < nodo.getDato()) {
@@ -173,7 +173,13 @@ public class Arbol {
         } else {
             // Nodo encontrado
             if (nodo.getLigaI() == null || nodo.getLigaD() == null) {
-                Nodo temp = (nodo.getLigaI() != null) ? nodo.getLigaI() : nodo.getLigaD();
+                Nodo temp;
+                if (nodo.getLigaI() != null) {
+                    temp = nodo.getLigaI();
+                } else {
+                    temp = nodo.getLigaD();
+                }
+
                 if (temp == null) {
                     nodo = null; // Caso hoja
                 } else {
@@ -194,7 +200,7 @@ public class Arbol {
         return balancear(nodo);
     }
 
-    private char encontrarMinimo(Nodo nodo) {   
+    private char encontrarMinimo(Nodo nodo) {
         char minVal = nodo.getDato();
         while (nodo.getLigaI() != null) {
             minVal = nodo.getLigaI().getDato();
@@ -399,14 +405,55 @@ public class Arbol {
         if (nodo == null) {
             return null;
         }
-        if ((nodo.getLigaI() != null && nodo.getLigaI().getDato() == dato) ||
-                (nodo.getLigaD() != null && nodo.getLigaD().getDato() == dato)) {
+        if ((nodo.getLigaI() != null && nodo.getLigaI().getDato() == dato)
+                || (nodo.getLigaD() != null && nodo.getLigaD().getDato() == dato)) {
             return nodo;
         }
         Nodo izq = encontrarPadre(nodo.getLigaI(), dato);
         if (izq != null)
             return izq;
         return encontrarPadre(nodo.getLigaD(), dato);
+    }
+
+    public String primosHermanos(char dato) {
+        if (Raiz == null) {
+            return "";
+        }
+        int nivelDato = nivel(dato);
+        if (nivelDato == -1 || nivelDato == 1) {
+            return ""; // No existe o es la raíz (no tiene primos)
+        }
+
+        Nodo padre = encontrarPadre(Raiz, dato);
+        if (padre == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        primosHermanosAux(Raiz, 1, nivelDato, padre, sb);
+        return sb.toString();
+    }
+
+    private void primosHermanosAux(Nodo nodo, int nivelActual, int nivelObjetivo, Nodo padreDelDato, StringBuilder sb) {
+        if (nodo == null) {
+            return;
+        }
+
+        // Si estamos en el nivel del padre (nivelObjetivo - 1), miramos sus hijos
+        if (nivelActual == nivelObjetivo - 1) {
+            // Si este nodo NO es el padre del dato que buscamos, sus hijos son primos
+            if (nodo != padreDelDato) {
+                if (nodo.getLigaI() != null) {
+                    sb.append(nodo.getLigaI().getDato()).append(" ");
+                }
+                if (nodo.getLigaD() != null) {
+                    sb.append(nodo.getLigaD().getDato()).append(" ");
+                }
+            }
+        } else {
+            primosHermanosAux(nodo.getLigaI(), nivelActual + 1, nivelObjetivo, padreDelDato, sb);
+            primosHermanosAux(nodo.getLigaD(), nivelActual + 1, nivelObjetivo, padreDelDato, sb);
+        }
     }
 
 }
